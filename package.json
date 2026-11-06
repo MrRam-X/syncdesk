@@ -12,8 +12,5 @@
     "dev:server": "npm run dev --workspace=server",
     "dev": "npm run dev:server & npm run dev:client",
     "build": "npm run build --workspaces"
-  },
-  "devDependencies": {
-    "@rolldown/binding-win32-x64-msvc": "^1.2.16"
   }
 }
