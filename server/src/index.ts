@@ -10,13 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS for local frontend and production deployments
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
+    origin: true, // Automatically reflects the request origin (Vercel, localhost, etc.)
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
+// Explicitly handle preflight requests
+app.options('*', cors());
 
 app.use(express.json());
 
