@@ -9,7 +9,9 @@ import {
 // import DashboardView from "./designs/DashboardView";
 // import FirstTimeUserDashboard from "./designs/FirstTimeUserDashboard";
 // import SprintsView from "./designs/SprintsView";
-import TaskItemsView from "./designs/TaskItemsView";
+// import TaskItemsView from "./designs/TaskItemsView";
+// import PlannerView from "./designs/PlannerView";
+import LoginAndRegisterView from "./designs/LoginAndRegisterView";
 // import type { HealthResponse } from "@syncdesk/shared";
 // import GlobalAppShellAndKanbanBoard from "./designs/GlobalAppShellAndKanbanBoard";
 // import KanbanBoardWithSprintAndBacklogView from "./designs/KanbanBoardWithSprintAndBacklogView";
@@ -130,7 +132,7 @@ function App() {
   // return <KanbanBoardWithSprintAndBacklogView />
   // return <UpdatedHeaderMenuWithLayout />
   // return <ProjectsView />
-  return <TaskItemsView />
+  return <LoginAndRegisterView />
 }
 
 export default App;
