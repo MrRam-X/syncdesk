@@ -13,7 +13,8 @@ import {
 // import PlannerView from "./designs/PlannerView";
 // import LoginAndRegisterView from "./designs/LoginAndRegisterView";
 // import OwnerAndSuperAdminView from "./designs/OwnerAndSuperAdminView";
-import InteractiveStateSwitcher from "./designs/InteractiveStateSwitcher";
+// import InteractiveStateSwitcher from "./designs/InteractiveStateSwitcher";
+import SkeletonsViewStateSwitcher from "./designs/SkeletonsViewStateSwitcher";
 // import type { HealthResponse } from "@syncdesk/shared";
 // import GlobalAppShellAndKanbanBoard from "./designs/GlobalAppShellAndKanbanBoard";
 // import KanbanBoardWithSprintAndBacklogView from "./designs/KanbanBoardWithSprintAndBacklogView";
@@ -130,7 +131,7 @@ function App() {
   //   </div>
   // );
 
-  return <InteractiveStateSwitcher />
+  return <SkeletonsViewStateSwitcher />
 }
 
 export default App;
