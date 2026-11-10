@@ -8,7 +8,7 @@ export function KanbanBoardSkeleton() {
       {/* Column Header Skeletons (6 Columns) */}
       <div className="grid grid-cols-[280px_repeat(5,minmax(220px,1fr))] gap-4 px-4 pb-2 border-b border-slate-800">
         {['Story', 'To Do', 'In Progress', 'Deployed', 'Testing', 'Done'].map((col, idx) => (
-          <div key={idx} className="flex items-center gap-2">
+          <div key={`${idx}-${col}`} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-slate-800" />
             <div className="h-3 w-20 bg-slate-800 rounded" />
           </div>
