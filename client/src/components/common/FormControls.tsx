@@ -1,5 +1,9 @@
-import { type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
-import { ChevronDown } from 'lucide-react';
+import {
+  type InputHTMLAttributes,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
+import { ChevronDown } from "lucide-react";
 
 interface BaseFieldProps {
   label: string;
@@ -11,7 +15,7 @@ const FormInput = ({
   label,
   required,
   error,
-  className = '',
+  className = "",
   ...props
 }: BaseFieldProps & InputHTMLAttributes<HTMLInputElement>) => {
   return (
@@ -22,20 +26,20 @@ const FormInput = ({
       <input
         {...props}
         className={`w-full bg-slate-950 border rounded-lg px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none transition text-xs ${
-          error ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+          error ? "border-rose-500" : "border-slate-800 focus:border-blue-500"
         } ${className}`}
       />
       {error && <p className="text-[10px] text-rose-400">{error}</p>}
     </div>
   );
-}
+};
 
 const FormSelect = ({
   label,
   required,
   error,
   children,
-  className = '',
+  className = "",
   ...props
 }: BaseFieldProps & SelectHTMLAttributes<HTMLSelectElement>) => {
   return (
@@ -47,7 +51,9 @@ const FormSelect = ({
         <select
           {...props}
           className={`w-full bg-slate-950 border rounded-lg px-3 py-2 text-slate-200 text-xs focus:outline-none appearance-none cursor-pointer transition ${
-            error ? 'border-rose-500' : 'border-slate-800 hover:border-slate-700 focus:border-blue-500'
+            error
+              ? "border-rose-500"
+              : "border-slate-800 hover:border-slate-700 focus:border-blue-500"
           } ${className}`}
         >
           {children}
@@ -57,13 +63,13 @@ const FormSelect = ({
       {error && <p className="text-[10px] text-rose-400">{error}</p>}
     </div>
   );
-}
+};
 
 const FormTextarea = ({
   label,
   required,
   error,
-  className = '',
+  className = "",
   rows = 4,
   ...props
 }: BaseFieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) => {
@@ -76,16 +82,12 @@ const FormTextarea = ({
         rows={rows}
         {...props}
         className={`w-full bg-slate-950 border rounded-lg p-3 text-slate-200 placeholder-slate-500 focus:outline-none transition text-xs leading-relaxed font-sans resize-none ${
-          error ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+          error ? "border-rose-500" : "border-slate-800 focus:border-blue-500"
         } ${className}`}
       />
       {error && <p className="text-[10px] text-rose-400">{error}</p>}
     </div>
   );
-}
+};
 
-export default {
-    FormInput, 
-    FormSelect,
-    FormTextarea
-}
+export { FormInput, FormSelect, FormTextarea };
