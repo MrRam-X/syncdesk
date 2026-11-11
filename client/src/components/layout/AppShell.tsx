@@ -16,13 +16,13 @@ const defaultProject: ProjectOption = {
   description: "Stripe, PayPal & billing pipeline",
 };
 
-export function AppShell({
+const AppShell = ({
   children,
   currentNav,
   onNavChange,
   currentProject = defaultProject,
   onSelectProject = () => {},
-}: AppShellProps) {
+}: AppShellProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
@@ -50,3 +50,5 @@ export function AppShell({
     </div>
   );
 }
+
+export default AppShell;
