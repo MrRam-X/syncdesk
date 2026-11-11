@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 
-export type StatColor = "blue" | "emerald" | "purple" | "rose" | "amber";
+export type StatColor = 'blue' | 'emerald' | 'purple' | 'rose' | 'amber' | 'sky';
 
 interface StatCardProps {
   title: string;
@@ -16,6 +16,7 @@ const colorStyles: Record<StatColor, string> = {
   purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   rose: "bg-rose-500/10 text-rose-400 border-rose-500/20",
   amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  sky: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
 };
 
 const StatCard = ({
