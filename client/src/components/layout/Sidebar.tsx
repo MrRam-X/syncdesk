@@ -1,3 +1,5 @@
+import { type FC } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Kanban,
@@ -20,31 +22,40 @@ export type NavItem =
 interface SidebarProps {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
-  currentNav: NavItem;
-  onNavChange: (nav: NavItem) => void;
   workspaceName?: string;
 }
 
 const navItems: {
   id: NavItem;
   label: string;
+  path: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "board", label: "Board", icon: Kanban },
-  { id: "projects", label: "Projects", icon: Layers },
-  { id: "sprints", label: "Sprints", icon: Milestone },
-  { id: "tasks", label: "Task Items", icon: CheckSquare },
-  { id: "planner", label: "Planner", icon: Compass },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  { id: "board", label: "Board", path: "/board", icon: Kanban },
+  { id: "projects", label: "Projects", path: "/projects", icon: Layers },
+  { id: "sprints", label: "Sprints", path: "/sprints", icon: Milestone },
+  { id: "tasks", label: "Task Items", path: "/tasks", icon: CheckSquare },
+  { id: "planner", label: "Planner", path: "/planner", icon: Compass },
 ];
 
-export function Sidebar({
+const Sidebar: FC<SidebarProps> = ({
   isCollapsed,
   onToggleCollapse,
-  currentNav,
-  onNavChange,
   workspaceName = "Acme Corp Workspace",
-}: SidebarProps) {
+}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <aside
       className={`border-r border-slate-800 bg-slate-950/70 p-3 flex flex-col justify-between shrink-0 select-none transition-all duration-300 ease-in-out relative z-20 ${
@@ -53,6 +64,7 @@ export function Sidebar({
     >
       {/* Sleek Vertical Tab Handle Fused to Border */}
       <button
+        type="button"
         onClick={onToggleCollapse}
         className="absolute left-full top-1/2 -translate-y-1/2 w-4 h-14 bg-slate-900 hover:bg-slate-800 border-y border-r border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 rounded-r-md flex items-center justify-center shadow-md transition-all duration-200 z-40 cursor-pointer group"
         title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
@@ -79,15 +91,19 @@ export function Sidebar({
             </div>
           </div>
 
-          {/* Navigation Links with Smooth Text Width Collapse */}
+          {/* Navigation Links */}
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentNav === item.id;
+              const isActive =
+                location.pathname === item.path ||
+                (item.path === "/dashboard" && location.pathname === "/");
+
               return (
                 <div key={item.id} className="relative group">
                   <button
-                    onClick={() => onNavChange(item.id)}
+                    type="button"
+                    onClick={() => handleNavClick(item.path)}
                     className={`w-full flex items-center gap-3 py-2 px-2.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                       isActive
                         ? "bg-blue-600/15 text-blue-400 border border-blue-500/20"
@@ -142,4 +158,6 @@ export function Sidebar({
       </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;

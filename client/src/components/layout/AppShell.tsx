@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Navbar, type ProjectOption } from "./Navbar";
-import { Sidebar, type NavItem } from "./Sidebar";
+import Sidebar, { type NavItem } from "./Sidebar";
 
 interface AppShellProps {
   children: ReactNode;
@@ -18,8 +18,6 @@ const defaultProject: ProjectOption = {
 
 const AppShell = ({
   children,
-  currentNav,
-  onNavChange,
   currentProject = defaultProject,
   onSelectProject = () => {},
 }: AppShellProps) => {
@@ -38,8 +36,6 @@ const AppShell = ({
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          currentNav={currentNav}
-          onNavChange={onNavChange}
         />
 
         {/* Main Canvas with the pl-5 breathing gutter */}
