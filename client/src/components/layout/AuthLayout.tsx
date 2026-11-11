@@ -5,7 +5,7 @@ interface AuthLayoutProps {
   headerAction?: ReactNode;
 }
 
-export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
+const AuthLayout = ({ children, headerAction }: AuthLayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased flex flex-col justify-between selection:bg-blue-600/30 selection:text-blue-200">
       {/* Top Minimal Branding Header */}
@@ -38,3 +38,5 @@ export function AuthLayout({ children, headerAction }: AuthLayoutProps) {
     </div>
   );
 }
+
+export default AuthLayout
