@@ -18,7 +18,7 @@ import {
   TableSkeleton,
   CardGridSkeleton,
   ButtonSpinner,
-} from "./components/Skeletons";
+} from "../components/feedback/Skeletons";
 
 export default function SkeletonsViewStateSwitcher() {
   // Sidebar state
