@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Navbar, type ProjectOption } from "./Navbar";
 import Sidebar, { type NavItem } from "./Sidebar";
+import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 
 interface AppShellProps {
   children: ReactNode;
@@ -40,7 +41,9 @@ const AppShell = ({
 
         {/* Main Canvas with the pl-5 breathing gutter */}
         <main className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-950 pl-5">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
       </div>
     </div>

@@ -1,7 +1,7 @@
 // =========================================================
 // 1. KANBAN BOARD SWIMLANE SKELETON (Flagship Board View)
 // =========================================================
-export function KanbanBoardSkeleton() {
+const KanbanBoardSkeleton = () => {
   return (
     <div className="w-fit min-w-full space-y-4 select-none animate-pulse">
       
@@ -82,7 +82,7 @@ interface TableSkeletonProps {
   showHeader?: boolean;
 }
 
-export function TableSkeleton({ rows = 5, showHeader = true }: TableSkeletonProps) {
+const TableSkeleton = ({ rows = 5, showHeader = true }: TableSkeletonProps) => {
   return (
     <div className="bg-slate-900/30 border border-slate-800 rounded-xl divide-y divide-slate-800 overflow-hidden shadow-sm animate-pulse select-none">
       
@@ -132,7 +132,7 @@ interface CardGridSkeletonProps {
   columns?: 2 | 3 | 4;
 }
 
-export function CardGridSkeleton({ count = 3, columns = 3 }: CardGridSkeletonProps) {
+const CardGridSkeleton = ({ count = 3, columns = 3 }: CardGridSkeletonProps) => {
   const colClass =
     columns === 4
       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
@@ -186,7 +186,7 @@ interface ButtonSpinnerProps {
   className?: string;
 }
 
-export function ButtonSpinner({ className = 'w-3.5 h-3.5' }: ButtonSpinnerProps) {
+const ButtonSpinner = ({ className = 'w-3.5 h-3.5' }: ButtonSpinnerProps) => {
   return (
     <svg
       className={`animate-spin text-current shrink-0 ${className}`}
@@ -209,4 +209,11 @@ export function ButtonSpinner({ className = 'w-3.5 h-3.5' }: ButtonSpinnerProps)
       />
     </svg>
   );
+}
+
+export {
+  KanbanBoardSkeleton,
+  TableSkeleton,
+  CardGridSkeleton,
+  ButtonSpinner
 }

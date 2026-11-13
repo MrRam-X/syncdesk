@@ -12,6 +12,8 @@ import {
   Moon,
   LogOut,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 export interface ProjectOption {
   name: string;
@@ -57,18 +59,30 @@ export function Navbar({
   onSelectProject,
   projects = defaultProjects,
   roleTitle = "Project Supervisor",
-  userName = "Alex Rivera",
-  userEmail = "alex.rivera@acme.com",
-  workspaceName = "Acme Corp",
 }: NavbarProps) {
+  const { user, logout } = useAuthStore();
+  const userProfileIconInitials = user
+    ? user?.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+    : "DU";
+  const navigate = useNavigate();
+
   const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-
   // Click outside handling
   const projectRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  const handleLogoutButtonClick = () => {
+    setIsProfileOpen(false);
+    logout();
+    navigate("/login");
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -286,11 +300,7 @@ export function Navbar({
             className="flex items-center gap-2 pl-1 group cursor-pointer"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold text-xs flex items-center justify-center ring-2 ring-slate-800 group-hover:ring-blue-500/50 transition">
-              {userName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)}
+              {userProfileIconInitials}
             </div>
           </button>
 
@@ -299,25 +309,23 @@ export function Navbar({
               <div className="p-3.5 border-b border-slate-800 bg-slate-950/40 space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)}
+                    {userProfileIconInitials}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-bold text-white text-xs truncate">
-                      {userName}
+                      {user?.fullName || "User Fullname"}
                     </div>
                     <div className="text-[11px] text-slate-400 truncate font-mono">
-                      {userEmail}
+                      {user?.email || "user@email.com"}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-[11px] pt-1">
-                  <span className="text-slate-500">{workspaceName}</span>
+                  <span className="text-slate-500">
+                    {user?.orgName || "workspaceName"}
+                  </span>
                   <span className="px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-semibold">
-                    {roleTitle}
+                    {user?.role || "roleTitle"}
                   </span>
                 </div>
               </div>
@@ -346,10 +354,7 @@ export function Navbar({
 
               <div className="p-1 border-t border-slate-800 bg-slate-950/40">
                 <button
-                  onClick={() => {
-                    setIsProfileOpen(false);
-                    alert("Sign out clicked");
-                  }}
+                  onClick={handleLogoutButtonClick}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition cursor-pointer text-left font-medium"
                 >
                   <LogOut className="w-3.5 h-3.5" />
