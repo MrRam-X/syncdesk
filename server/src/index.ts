@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { pool } from "./db";
 import { type HealthResponse } from "@syncdesk/shared";
 import authRouter from "./routes/auth";
+import adminRouter from "./routes/admin";
+import ownerRouter from "./routes/owner";
 
 dotenv.config();
 
@@ -24,6 +26,8 @@ app.use(express.json());
 
 // Mount API Routes
 app.use("/api/auth", authRouter);
+app.use('/api/owner', ownerRouter);
+app.use('/api/admin', adminRouter);
 
 // Health Check Endpoint
 app.get("/api/health", async (_req, res) => {

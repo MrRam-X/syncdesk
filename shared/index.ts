@@ -69,3 +69,36 @@ export interface AuthResponse {
   token: string;
   user: AuthUser;
 }
+
+// =============================
+// Owner and Super Admin Action
+// =============================
+
+// Add Employee Schema (Owner Action)
+export const AddEmployeeSchema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  subRole: z.enum([
+    EmployeeSubRole.PROJECT_SUPERVISOR,
+    EmployeeSubRole.COORDINATOR,
+    EmployeeSubRole.CONTRIBUTOR,
+    EmployeeSubRole.READER,
+  ]),
+  initialPassword: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export type AddEmployeeInput = z.infer<typeof AddEmployeeSchema>;
+
+// Provision Organization Schema (Super Admin Action)
+export const CreateOrgSchema = z.object({
+  name: z.string().min(2, 'Organization name must be at least 2 characters'),
+  slug: z
+    .string()
+    .min(2, 'Slug must be at least 2 characters')
+    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  ownerName: z.string().min(2, 'Owner name must be at least 2 characters'),
+  ownerEmail: z.string().email('Invalid owner email address'),
+  plan: z.string().default('Enterprise Tier'),
+});
+
+export type CreateOrgInput = z.infer<typeof CreateOrgSchema>;
