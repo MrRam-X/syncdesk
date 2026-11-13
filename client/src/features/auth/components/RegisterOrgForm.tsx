@@ -1,4 +1,4 @@
-import { type FC, type FormEvent, useState } from "react";
+import { type FC } from "react";
 import {
   Building2,
   User,
@@ -6,40 +6,25 @@ import {
   Lock,
   ArrowRight,
   ShieldCheck,
+  Eye,
+  EyeOff,
 } from "lucide-react";
+import useRegisterForm from "../hooks/useRegisterForm";
+import { ButtonSpinner } from "@/components/feedback/Skeletons";
 
-interface RegisterOrgFormProps {
-  onSuccessRegister?: (data: {
-    orgName: string;
-    slug: string;
-    ownerEmail: string;
-  }) => void;
-  onNavigateToLogin?: () => void;
-}
-
-const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
-  onSuccessRegister = () => {},
-  onNavigateToLogin = () => {},
-}) => {
-  const [orgName, setOrgName] = useState("");
-  const [orgSlug, setOrgSlug] = useState("");
-  const [ownerName, setOwnerName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleOrgNameChange = (val: string) => {
-    setOrgName(val);
-    setOrgSlug(val.toLowerCase().trim().replace(/\s+/g, "-"));
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    onSuccessRegister({ orgName, slug: orgSlug, ownerEmail: email });
-  };
+const RegisterOrgForm: FC = () => {
+  const {
+    isLoading,
+    registerFormInput,
+    showPassword,
+    handleSubmit,
+    onRegisterformInputDataChange,
+    handleShowPasswordIconClick,
+    handleNavigateToLogin,
+  } = useRegisterForm();
 
   return (
     <div className="p-8 bg-slate-900/60 border border-slate-800 rounded-2xl shadow-2xl backdrop-blur-sm space-y-6 select-none">
-      {/* Header */}
       <div className="space-y-1.5 text-center">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-1">
           <ShieldCheck className="w-3.5 h-3.5" />
@@ -53,7 +38,6 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Organization Name */}
         <div className="space-y-1.5">
@@ -65,8 +49,9 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
             <input
               type="text"
               required
-              value={orgName}
-              onChange={(e) => handleOrgNameChange(e.target.value)}
+              value={registerFormInput.orgName}
+              name="orgName"
+              onChange={onRegisterformInputDataChange}
               placeholder="e.g., Acme Corporation"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs"
             />
@@ -85,8 +70,9 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
             <input
               type="text"
               required
-              value={orgSlug}
-              onChange={(e) => setOrgSlug(e.target.value)}
+              value={registerFormInput.orgSlug}
+              name="orgSlug"
+              onChange={onRegisterformInputDataChange}
               placeholder="acme-corp"
               className="w-full bg-transparent px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none font-mono text-xs"
             />
@@ -105,8 +91,9 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
             <input
               type="text"
               required
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
+              value={registerFormInput.fullName}
+              name="fullName"
+              onChange={onRegisterformInputDataChange}
               placeholder="e.g., Sarah Vance"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs"
             />
@@ -123,8 +110,9 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
             <input
               type="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={registerFormInput.email}
+              name="email"
+              onChange={onRegisterformInputDataChange}
               placeholder="sarah.vance@acme.com"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs"
             />
@@ -139,31 +127,59 @@ const RegisterOrgForm: FC<RegisterOrgFormProps> = ({
           <div className="relative">
             <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={registerFormInput.password}
+              name="password"
+              onChange={onRegisterformInputDataChange}
               placeholder="Minimum 8 characters"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs font-mono"
             />
+            <button
+              type="button"
+              onClick={handleShowPasswordIconClick}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
 
         <button
           type="submit"
-          className="w-full py-2.5 mt-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition cursor-pointer"
+          disabled={isLoading}
+          className="w-full py-2.5 mt-3 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition cursor-pointer"
         >
-          <span>Create Organization & Workspace</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          {/* {isLoading ? (
+            <span>Provisioning Organization...</span>
+          ) : (
+            <>
+              <span>Create Organization & Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </>
+          )} */}
+
+          {isLoading ? (
+            <>
+              <ButtonSpinner className="w-3.5 h-3.5"/>
+              <span>Provisioning Organization...</span>
+            </>
+          ) : <>
+              <span>Create Organization & Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </>}
         </button>
       </form>
 
-      {/* Login Switcher */}
       <div className="text-center text-xs text-slate-400 pt-1">
         Already registered an organization?{" "}
         <button
           type="button"
-          onClick={onNavigateToLogin}
+          onClick={handleNavigateToLogin}
           className="text-blue-400 font-semibold hover:underline cursor-pointer"
         >
           Sign in

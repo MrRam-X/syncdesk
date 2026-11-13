@@ -2,6 +2,9 @@ import { type FC } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+// Route Guards
+import ProtectedRoute from '@/components/layout/ProtectedRoute';
+
 // Page Controllers
 import DashboardPage from '@/pages/DashboardPage';
 import BoardPage from '@/pages/BoardPage';
@@ -18,22 +21,85 @@ const App: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Core Workspace Routes */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/board" element={<BoardPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/sprints" element={<SprintsPage />} />
-        <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/planner" element={<PlannerPage />} />
-
-        {/* Portals */}
-        <Route path="/employees" element={<EmployeesPage />} />
-        <Route path="/admin/orgs" element={<AdminOrgsPage />} />
-
-        {/* Authentication Routes */}
+        {/* Public Authentication Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
+        {/* Protected Workspace Routes (Must be logged in) */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/dashboard" replace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/board"
+          element={
+            <ProtectedRoute>
+              <BoardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <ProjectsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sprints"
+          element={
+            <ProtectedRoute>
+              <SprintsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <TasksPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/planner"
+          element={
+            <ProtectedRoute>
+              <PlannerPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Role-Guarded Portals */}
+        <Route
+          path="/employees"
+          element={
+            <ProtectedRoute allowedRoles={['OWNER']}>
+              <EmployeesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orgs"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminOrgsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
