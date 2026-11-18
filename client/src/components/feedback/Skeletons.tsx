@@ -1,5 +1,8 @@
 // =========================================================
 // 1. KANBAN BOARD SWIMLANE SKELETON (Flagship Board View)
+
+import type { FC } from "react";
+
 // =========================================================
 const KanbanBoardSkeleton = () => {
   return (
@@ -82,7 +85,7 @@ interface TableSkeletonProps {
   showHeader?: boolean;
 }
 
-const TableSkeleton = ({ rows = 5, showHeader = true }: TableSkeletonProps) => {
+const TableSkeleton: FC<TableSkeletonProps> = ({ rows = 5, showHeader = true }) => {
   return (
     <div className="bg-slate-900/30 border border-slate-800 rounded-xl divide-y divide-slate-800 overflow-hidden shadow-sm animate-pulse select-none">
       
@@ -132,7 +135,7 @@ interface CardGridSkeletonProps {
   columns?: 2 | 3 | 4;
 }
 
-const CardGridSkeleton = ({ count = 3, columns = 3 }: CardGridSkeletonProps) => {
+const CardGridSkeleton: FC<CardGridSkeletonProps> = ({ count = 3, columns = 3 }) => {
   const colClass =
     columns === 4
       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
@@ -186,7 +189,7 @@ interface ButtonSpinnerProps {
   className?: string;
 }
 
-const ButtonSpinner = ({ className = 'w-3.5 h-3.5' }: ButtonSpinnerProps) => {
+const ButtonSpinner: FC<ButtonSpinnerProps> = ({ className = 'w-3.5 h-3.5' }) => {
   return (
     <svg
       className={`animate-spin text-current shrink-0 ${className}`}
@@ -211,9 +214,33 @@ const ButtonSpinner = ({ className = 'w-3.5 h-3.5' }: ButtonSpinnerProps) => {
   );
 }
 
+interface SingleCardListSkeletonProps {
+  rows?: number;
+}
+
+const SingleCardListSkeleton: FC<SingleCardListSkeletonProps> = ({ rows = 4 }) => {
+  return (
+    <div className="space-y-2 animate-pulse select-none">
+      {Array.from({ length: rows }).map((_, idx) => (
+        <div
+          key={idx}
+          className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between"
+        >
+          <div className="space-y-1.5">
+            <div className="h-3.5 w-36 bg-slate-800 rounded" />
+            <div className="h-2.5 w-24 bg-slate-800/80 rounded" />
+          </div>
+          <div className="h-2.5 w-16 bg-slate-800 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export {
   KanbanBoardSkeleton,
   TableSkeleton,
   CardGridSkeleton,
-  ButtonSpinner
+  ButtonSpinner,
+  SingleCardListSkeleton
 }

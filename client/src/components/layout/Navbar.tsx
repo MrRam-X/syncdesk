@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Search,
   ChevronDown,
   Bell,
-  Sparkles,
   Check,
   Rocket,
   MessageSquare,
@@ -14,6 +12,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { useNavigate } from "react-router-dom";
+import { headerBadgeRoleConfig } from "@/config/navigationConfig";
+import { UserRole } from "@syncdesk/shared";
 
 export interface ProjectOption {
   name: string;
@@ -58,7 +58,6 @@ export function Navbar({
   currentProject,
   onSelectProject,
   projects = defaultProjects,
-  roleTitle = "Project Supervisor",
 }: NavbarProps) {
   const { user, logout } = useAuthStore();
   const userProfileIconInitials = user
@@ -102,6 +101,26 @@ export function Navbar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const userRoleBadge = () => {
+    const userRole = user?.role;
+    const userSubRole = user?.subRole || "CONTRIBUTOR";
+    const badgeItem =
+      userRole === UserRole.EMPLOYEE
+        ? headerBadgeRoleConfig.EMPLOYEE[userSubRole]
+        : userRole
+          ? headerBadgeRoleConfig[userRole]
+          : null;
+    const Icon = badgeItem?.icon;
+    return (
+      <div
+        className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium ${badgeItem ? `${badgeItem.className}` : "bg-blue-500/10 border-blue-500/20 text-blue-400"}`}
+      >
+        {Icon && <Icon className="w-3 h-3" />}
+        <span>{badgeItem ? badgeItem.label : ""}</span>
+      </div>
+    );
+  };
+
   return (
     <header className="h-14 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-4 flex items-center justify-between shrink-0 z-40 relative select-none">
       {/* Left: Brand Logo & Project Dropdown */}
@@ -116,73 +135,75 @@ export function Navbar({
         <div className="h-4 w-px bg-slate-800" />
 
         {/* Custom Project Selector Dropdown */}
-        <div className="relative" ref={projectRef}>
-          <button
-            onClick={() => {
-              setIsProjectDropdownOpen(!isProjectDropdownOpen);
-              setIsNotificationsOpen(false);
-              setIsProfileOpen(false);
-            }}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-md hover:bg-slate-800 text-xs font-medium text-slate-200 transition border border-transparent hover:border-slate-700 cursor-pointer"
-          >
-            <div className="w-4 h-4 rounded bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px]">
-              {currentProject.key[0]}
-            </div>
-            <span className="font-semibold">{currentProject.name}</span>
-            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold font-mono">
-              {currentProject.key}
-            </span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
-          {isProjectDropdownOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-              <div className="p-2 border-b border-slate-800 text-[11px] font-semibold text-slate-400 px-3 uppercase tracking-wider">
-                Select Project
+        {user && user.role === UserRole.EMPLOYEE && (
+          <div className="relative" ref={projectRef}>
+            <button
+              onClick={() => {
+                setIsProjectDropdownOpen(!isProjectDropdownOpen);
+                setIsNotificationsOpen(false);
+                setIsProfileOpen(false);
+              }}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md hover:bg-slate-800 text-xs font-medium text-slate-200 transition border border-transparent hover:border-slate-700 cursor-pointer"
+            >
+              <div className="w-4 h-4 rounded bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px]">
+                {currentProject.key[0]}
               </div>
-              <div className="max-h-56 overflow-y-auto space-y-0.5 p-1 text-xs">
-                {projects.map((proj) => (
-                  <div
-                    key={proj.key}
-                    onClick={() => {
-                      onSelectProject(proj);
-                      setIsProjectDropdownOpen(false);
-                    }}
-                    className={`flex items-start justify-between p-2.5 rounded-lg cursor-pointer transition ${
-                      currentProject.key === proj.key
-                        ? "bg-blue-600/15 text-blue-400"
-                        : "hover:bg-slate-800 text-slate-200"
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1 pr-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-xs truncate">
-                          {proj.name}
-                        </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
-                          {proj.key}
-                        </span>
+              <span className="font-semibold">{currentProject.name}</span>
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold font-mono">
+                {currentProject.key}
+              </span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            {isProjectDropdownOpen && (
+              <div className="absolute left-0 top-full mt-1.5 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                <div className="p-2 border-b border-slate-800 text-[11px] font-semibold text-slate-400 px-3 uppercase tracking-wider">
+                  Select Project
+                </div>
+                <div className="max-h-56 overflow-y-auto space-y-0.5 p-1 text-xs">
+                  {projects.map((proj) => (
+                    <div
+                      key={proj.key}
+                      onClick={() => {
+                        onSelectProject(proj);
+                        setIsProjectDropdownOpen(false);
+                      }}
+                      className={`flex items-start justify-between p-2.5 rounded-lg cursor-pointer transition ${
+                        currentProject.key === proj.key
+                          ? "bg-blue-600/15 text-blue-400"
+                          : "hover:bg-slate-800 text-slate-200"
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-xs truncate">
+                            {proj.name}
+                          </span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
+                            {proj.key}
+                          </span>
+                        </div>
+                        {proj.description && (
+                          <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                            {proj.description}
+                          </p>
+                        )}
                       </div>
-                      {proj.description && (
-                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                          {proj.description}
-                        </p>
+                      {currentProject.key === proj.key && (
+                        <Check className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                       )}
                     </div>
-                    {currentProject.key === proj.key && (
-                      <Check className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right: Search, Role Badge, Notifications & Profile Popover */}
       <div className="flex items-center gap-3">
-        <div className="relative hidden md:block">
+        {/* <div className="relative hidden md:block">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -190,12 +211,14 @@ export function Navbar({
             className="w-56 h-8 bg-slate-950/60 border border-slate-800 rounded-lg pl-8 pr-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/80 transition"
             readOnly
           />
-        </div>
+        </div> */}
 
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] font-medium text-blue-400">
+        {/* <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] font-medium text-blue-400">
           <Sparkles className="w-3 h-3 text-blue-400" />
           <span>{roleTitle}</span>
-        </div>
+        </div> */}
+
+        {userRoleBadge()}
 
         {/* Notifications Popover */}
         <div className="relative" ref={notifRef}>

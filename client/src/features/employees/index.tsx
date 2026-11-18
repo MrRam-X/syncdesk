@@ -7,126 +7,80 @@ import {
   Users,
 } from "lucide-react";
 import OwnerDashboardView from "./components/OwnerDashboardView";
-import EmployeeTable, {
-  type EmployeeRowItem,
-} from "./components/EmployeeTable";
+import EmployeeTable from "./components/EmployeeTable";
 import EmployeeDetails from "./components/EmployeeDetails";
-import AddEmployeeModal, {
-  type NewEmployeeData,
-} from "./components/AddEmployeeModal";
-
-const sampleEmployees: EmployeeRowItem[] = [
-  {
-    id: "emp-1",
-    name: "Alex Rivera",
-    email: "alex.rivera@acme.com",
-    role: "Project Supervisor",
-    roleColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    status: "Active",
-    joined: "Oct 12, 2026",
-    projects: ["SYNC", "MOB"],
-    initials: "AR",
-    bg: "bg-blue-600",
-  },
-  {
-    id: "emp-2",
-    name: "Sarah Chen",
-    email: "sarah.chen@acme.com",
-    role: "Coordinator",
-    roleColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    status: "Active",
-    joined: "Oct 14, 2026",
-    projects: ["SYNC", "AUTH"],
-    initials: "SC",
-    bg: "bg-emerald-600",
-  },
-  {
-    id: "emp-3",
-    name: "John Doe",
-    email: "john.doe@acme.com",
-    role: "Contributor",
-    roleColor: "bg-sky-500/10 text-sky-400 border-sky-500/20",
-    status: "Active",
-    joined: "Oct 18, 2026",
-    projects: ["SYNC", "MOB"],
-    initials: "JD",
-    bg: "bg-purple-600",
-  },
-  {
-    id: "emp-4",
-    name: "Elena Rostova",
-    email: "elena.rostova@acme.com",
-    role: "Reader",
-    roleColor: "bg-slate-500/10 text-slate-400 border-slate-500/20",
-    status: "Active",
-    joined: "Oct 22, 2026",
-    projects: ["AUTH"],
-    initials: "ER",
-    bg: "bg-slate-700",
-  },
-  {
-    id: "emp-5",
-    name: "Marcus Vance",
-    email: "marcus.vance@acme.com",
-    role: "Contributor",
-    roleColor: "bg-sky-500/10 text-sky-400 border-sky-500/20",
-    status: "Active",
-    joined: "Nov 01, 2026",
-    projects: ["SYNC", "DATA"],
-    initials: "MV",
-    bg: "bg-amber-600",
-  },
-];
+import AddEmployeeModal from "./components/AddEmployeeModal";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import {
+  TableSkeleton,
+  CardGridSkeleton,
+} from "@/components/feedback/Skeletons";
+import {
+  useEmployees,
+  useOwnerDashboard,
+  useOwnerMutations,
+  type EmployeeData,
+} from "./hooks/useOwner";
 
 const Employees: FC = () => {
-  const [employees, setEmployees] =
-    useState<EmployeeRowItem[]>(sampleEmployees);
+  const { data: dashboardData, isLoading: isDashboardLoading } =
+    useOwnerDashboard();
+  const { data: employees = [], isLoading: isEmployeesLoading } =
+    useEmployees();
+  const { addEmployee, isAddingEmployee, toggleStatus, deleteEmployee } =
+    useOwnerMutations();
+
   const [activeSubTab, setActiveSubTab] = useState<"dashboard" | "employees">(
     "dashboard",
   );
-  const [selectedEmployee, setSelectedEmployee] =
-    useState<EmployeeRowItem | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
+    null,
+  );
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<EmployeeData | null>(
+    null,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
 
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
-      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       emp.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === "All Roles" || emp.role === roleFilter;
+    const matchesRole =
+      roleFilter === "All Roles" || emp.subRole === roleFilter;
     return matchesSearch && matchesRole;
   });
 
-  const handleAddEmployee = (data: NewEmployeeData) => {
-    const newEmp: EmployeeRowItem = {
-      id: `emp-${Date.now()}`,
-      name: `${data.firstName} ${data.lastName}`,
-      email: data.email,
-      role: data.role,
-      roleColor:
-        data.role === "Project Supervisor"
-          ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-          : data.role === "Coordinator"
-            ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-            : data.role === "Reader"
-              ? "bg-slate-500/10 text-slate-400 border-slate-500/20"
-              : "bg-sky-500/10 text-sky-400 border-sky-500/20",
-      status: "Active",
-      joined: "Just now",
-      projects: ["SYNC"],
-      initials: `${data.firstName[0]}${data.lastName[0]}`.toUpperCase(),
-      bg: "bg-indigo-600",
-    };
-    setEmployees([newEmp, ...employees]);
+  const selectedEmployee = employees.find((e) => e.id === selectedEmployeeId);
+
+  const handleConfirmDelete = async () => {
+    if (employeeToDelete) {
+      await deleteEmployee(employeeToDelete.id);
+      if (selectedEmployeeId === employeeToDelete.id) {
+        setSelectedEmployeeId(null);
+      }
+      setEmployeeToDelete(null);
+    }
   };
 
   // 1. Employee Details View
   if (selectedEmployee) {
     return (
       <EmployeeDetails
-        employee={selectedEmployee}
-        onBack={() => setSelectedEmployee(null)}
+        employee={{
+          id: selectedEmployee.id,
+          name: selectedEmployee.fullName,
+          email: selectedEmployee.email,
+          role: selectedEmployee.subRole,
+          roleColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+          status: selectedEmployee.isActive ? "Active" : "Deactivated",
+          joined: new Date(selectedEmployee.createdAt).toLocaleDateString(),
+          projects: ["SYNC"],
+          initials: selectedEmployee.fullName.slice(0, 2).toUpperCase(),
+          bg: "bg-blue-600",
+        }}
+        onBack={() => setSelectedEmployeeId(null)}
       />
     );
   }
@@ -139,7 +93,9 @@ const Employees: FC = () => {
           <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
             <span>Owner Portal</span>
             <span>/</span>
-            <span className="text-purple-400 font-semibold">Acme Corp</span>
+            <span className="text-purple-400 font-semibold">
+              {dashboardData?.orgName || "Workspace"}
+            </span>
           </div>
           <h1 className="text-xl font-bold tracking-tight text-white mt-1">
             Workforce Governance
@@ -147,7 +103,7 @@ const Employees: FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Sub-Tab Switcher */}
+          {/* Sub-Tab Navigation */}
           <div className="flex items-center gap-1 p-0.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-medium">
             <button
               type="button"
@@ -186,12 +142,18 @@ const Employees: FC = () => {
         </div>
       </div>
 
-      {/* 2. Sub-Tab 1: Owner Dashboard */}
+      {/* 2. Sub-Tab 1: Dashboard View */}
       {activeSubTab === "dashboard" && (
-        <OwnerDashboardView
-          totalEmployees={employees.length}
-          onViewRoster={() => setActiveSubTab("employees")}
-        />
+        <>
+          {isDashboardLoading ? (
+            <CardGridSkeleton count={4} columns={4} />
+          ) : (
+            <OwnerDashboardView
+              data={dashboardData}
+              onViewRoster={() => setActiveSubTab("employees")}
+            />
+          )}
+        </>
       )}
 
       {/* 3. Sub-Tab 2: Employees Directory */}
@@ -216,19 +178,27 @@ const Employees: FC = () => {
                 className="h-8 bg-slate-950 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-200 rounded-lg px-3 pr-8 focus:outline-none focus:border-blue-500 appearance-none cursor-pointer transition"
               >
                 <option value="All Roles">All Sub-Roles</option>
-                <option value="Project Supervisor">Project Supervisor</option>
-                <option value="Coordinator">Coordinator</option>
-                <option value="Contributor">Contributor</option>
-                <option value="Reader">Reader</option>
+                <option value="PROJECT_SUPERVISOR">Project Supervisor</option>
+                <option value="COORDINATOR">Coordinator</option>
+                <option value="CONTRIBUTOR">Contributor</option>
+                <option value="READER">Reader</option>
               </select>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
-          <EmployeeTable
-            employees={filteredEmployees}
-            onSelectEmployee={setSelectedEmployee}
-          />
+          {isEmployeesLoading ? (
+            <TableSkeleton rows={5} />
+          ) : (
+            <EmployeeTable
+              employees={filteredEmployees}
+              onSelectEmployee={(emp) => setSelectedEmployeeId(emp.id)}
+              onToggleStatus={(emp) =>
+                toggleStatus({ id: emp.id, isActive: !emp.isActive })
+              }
+              onDeleteEmployee={(emp) => setEmployeeToDelete(emp)}
+            />
+          )}
         </div>
       )}
 
@@ -236,7 +206,18 @@ const Employees: FC = () => {
       <AddEmployeeModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onAddEmployee={handleAddEmployee}
+        onAddEmployee={addEmployee}
+        isLoading={isAddingEmployee}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!employeeToDelete}
+        onClose={() => setEmployeeToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Remove Employee"
+        message={`Are you sure you want to remove "${employeeToDelete?.fullName}" from your organization? Assigned tasks will be unassigned automatically.`}
+        confirmLabel="Remove Employee"
       />
     </div>
   );

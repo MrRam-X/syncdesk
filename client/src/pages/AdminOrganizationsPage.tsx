@@ -1,10 +1,10 @@
 import { type FC, useState } from 'react';
 import AppShell from '@/components/layout/AppShell';
-import AdminOrgs from '@/features/admin';
 import { type NavItem } from '@/components/layout/Sidebar';
 import { type ProjectOption } from '@/components/layout/Navbar';
+import OrganizationsView from '@/features/admin/organization';
 
-const AdminOrgsPage: FC = () => {
+const AdminOrganizationsPage: FC = () => {
   const [currentNav, setCurrentNav] = useState<NavItem>('dashboard');
   const [currentProject, setCurrentProject] = useState<ProjectOption>({
     name: 'Payments Engine',
@@ -27,9 +27,9 @@ const AdminOrgsPage: FC = () => {
       currentProject={currentProject}
       onSelectProject={handleSelectProject}
     >
-      <AdminOrgs />
+      <OrganizationsView />
     </AppShell>
   );
 };
 
-export default AdminOrgsPage;
+export default AdminOrganizationsPage;
